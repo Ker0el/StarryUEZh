@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 2,
+	"VersionName": "0.2.0",
+	"FriendlyName": "星空汉化",
+	"Description": "蓝图、材质、Niagara 节点和编辑器界面的中文显示插件，支持中英切换与中英文搜索，不修改源码、资产名和路径，不影响打包。",
+	"Category": "Editor",
+	"CreatedBy": "星空汉化",
+	"CanContainContent": true,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "StarryUEZh",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		}
+	]
+}

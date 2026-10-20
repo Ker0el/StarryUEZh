@@ -1,0 +1,10 @@
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+_pkg/
+*.pdb
+*.zip
+*.VC.db
+*.sln
+.vs/

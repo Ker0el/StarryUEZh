@@ -1,0 +1,5 @@
+* text=auto
+*.lib binary
+*.dll binary
+*.uasset binary
+*.umap binary

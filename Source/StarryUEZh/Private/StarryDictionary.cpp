@@ -640,14 +640,8 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 		OutTranslation = *Found;
 		return true;
 	}
-	// "AmbientOcclusion" and "CenterPosition" match spaced entries through the
-	// compact index. Do this before the asset-name guard, otherwise pins whose
-	// names happen to be asset names stay English.
-	if (const FString* Found = CompactEntries.Find(NormalizeKey(Source)))
-	{
-		OutTranslation = *Found;
-		return true;
-	}
+	// Asset-name protection stays ahead of the compact index; explicit entries
+	// such as AmbientOcclusion are handled by the exact lookup above.
 
 	// Material function asset node titles and material function enum values are
 	// often asset names, so translate them compositionally before the asset guard.
@@ -686,11 +680,6 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 
 	// Exact trimmed entries also bypass the asset-name guard.
 	if (const FString* Found = Entries.Find(Trimmed))
-	{
-		OutTranslation = Lead + Prefix + *Found + Trail;
-		return true;
-	}
-	if (const FString* Found = CompactEntries.Find(NormalizeKey(Trimmed)))
 	{
 		OutTranslation = Lead + Prefix + *Found + Trail;
 		return true;

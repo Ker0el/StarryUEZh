@@ -2,9 +2,9 @@
   <img src="Resources/Icon128.png" width="120" alt="星空汉化">
 </p>
 
-<h1 align="center">星空汉化（StarryUEZh）</h1>
+<h1 align="center">UnrealEngine-Chinese</h1>
 
-<p align="center">虚幻引擎 5.4 到 5.8 编辑器中文汉化插件</p>
+<p align="center">虚幻引擎 5.4 到 5.8 编辑器汉化插件 · 星空汉化</p>
 
 <p align="center">
   蓝图 · 材质 · Niagara · 动画蓝图 · 细节面板 · 菜单
@@ -34,7 +34,7 @@
 
 ## 下载
 
-到 [Releases](https://github.com/Ker0el/StarryUEZh/releases/latest) 按引擎版本下载：
+到 [Releases](https://github.com/Ker0el/UnrealEngine-Chinese/releases/latest) 按引擎版本下载：
 
 | 引擎版本 | 压缩包 |
 |---|---|

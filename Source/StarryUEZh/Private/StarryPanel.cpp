@@ -158,6 +158,41 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 				.Text(this, &SStarryUEZhPanel::GetStatsText)
 			]
 
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(0.0f, 0.0f, 0.0f, 8.0f)
+			[
+				SNew(SBorder)
+				.BorderImage(FAppStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+				.Padding(6.0f)
+				[
+					SNew(SVerticalBox)
+
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("UsageTitle", "使用步骤"))
+						.Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
+					]
+
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0.0f, 3.0f, 0.0f, 0.0f)
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("UsageSteps",
+							"1. 点「扫描词条」，等它扫完。这一步不用打开窗口。\n"
+							"2. 打开你想汉化的窗口，把折叠的菜单和下拉框展开一次。\n"
+							"3. 回到面板，点「收集未翻译文字」，新出现的词会列在下面。\n"
+							"4. 选中一条，填中文，点「保存词条」，马上生效。\n"
+							"5. 不想手动翻，就用上面的 AI：填 Key、选模型、点开始翻译。"))
+						.AutoWrapText(true)
+						.ColorAndOpacity(FLinearColor(0.72f, 0.72f, 0.72f))
+					]
+				]
+			]
+
 			// AI translation controls live at the top, right under the status.
 			+ SVerticalBox::Slot()
 			.AutoHeight()
@@ -319,6 +354,17 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 .ContentPadding(FMargin(16.0f, 8.0f))
 					.ToolTipText(LOCTEXT("HarvestTooltip", "扫描节点、函数、枚举、属性和说明文字"))
 					.OnClicked(this, &SStarryUEZhPanel::OnHarvest)
+				]
+
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.Padding(0.0f, 0.0f, 6.0f, 0.0f)
+				[
+					SNew(SButton)
+					.Text(LOCTEXT("CollectButton", "收集未翻译文字"))
+.ContentPadding(FMargin(16.0f, 8.0f))
+					.ToolTipText(LOCTEXT("CollectTooltip", "把刚才在窗口里显示过的未翻译文字收进列表"))
+					.OnClicked(this, &SStarryUEZhPanel::OnCollectGaps)
 				]
 
 				+ SHorizontalBox::Slot()
@@ -502,6 +548,14 @@ FReply SStarryUEZhPanel::OnHarvest()
 	ShowNotification(FText::FromString(FString::Printf(
 		TEXT("扫描完成：共 %d 条，已翻译 %d，未翻译 %d"),
 		AllScanRows.Num(), ScanTranslatedCount, AllScanRows.Num() - ScanTranslatedCount)));
+	return FReply::Handled();
+}
+
+FReply SStarryUEZhPanel::OnCollectGaps()
+{
+	StarryHooks::DumpGaps();
+	LoadScanResults();
+	ShowNotification(LOCTEXT("CollectDone", "已收集未翻译文字，列表已刷新"));
 	return FReply::Handled();
 }
 
@@ -713,6 +767,9 @@ TSharedRef<ITableRow> SStarryUEZhPanel::OnGenerateScanRow(
 	const FLinearColor TranslationColor = bTranslated
 		? FLinearColor(0.78f, 0.78f, 0.78f)
 		: FLinearColor(1.0f, 0.58f, 0.22f);
+	// Keep the source column in English: the leading zero-width space makes
+	// the display hook treat this text as user content and skip translation.
+	const FString DisplaySource = FString::Chr(0x200B) + Item->Source;
 
 	return SNew(STableRow<TSharedPtr<FStarryScanRow>>, OwnerTable)
 		.Padding(FMargin(2.0f, 1.0f))
@@ -733,7 +790,7 @@ TSharedRef<ITableRow> SStarryUEZhPanel::OnGenerateScanRow(
 			.Padding(6.0f, 0.0f)
 			[
 				SNew(STextBlock)
-				.Text(FText::FromString(Item->Source))
+				.Text(FText::FromString(DisplaySource))
 			]
 
 			+ SHorizontalBox::Slot()
@@ -762,7 +819,7 @@ void SStarryUEZhPanel::OnScanSelectionChanged(TSharedPtr<FStarryScanRow> Item, E
 	}
 	if (ScanSourceBox.IsValid())
 	{
-		ScanSourceBox->SetText(FText::FromString(Item->Source));
+		ScanSourceBox->SetText(FText::FromString(FString::Chr(0x200B) + Item->Source));
 	}
 	if (ScanTranslationBox.IsValid())
 	{
@@ -859,7 +916,8 @@ FReply SStarryUEZhPanel::OnSaveManualEntry()
 		return FReply::Handled();
 	}
 
-	const FString Source = ScanSourceBox->GetText().ToString().TrimStartAndEnd();
+	FString Source = ScanSourceBox->GetText().ToString().TrimStartAndEnd();
+	Source.RemoveFromStart(FString::Chr(0x200B));
 	const FString Translation = ScanTranslationBox->GetText().ToString().TrimStartAndEnd();
 	if (Source.IsEmpty() || Translation.IsEmpty())
 	{
@@ -893,7 +951,8 @@ FReply SStarryUEZhPanel::OnDeleteManualEntry()
 		return FReply::Handled();
 	}
 
-	const FString Source = ScanSourceBox->GetText().ToString().TrimStartAndEnd();
+	FString Source = ScanSourceBox->GetText().ToString().TrimStartAndEnd();
+	Source.RemoveFromStart(FString::Chr(0x200B));
 	if (Source.IsEmpty())
 	{
 		ShowNotification(LOCTEXT("EntryNoSource", "先选中一行或填入原文"));

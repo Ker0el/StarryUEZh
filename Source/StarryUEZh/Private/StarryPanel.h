@@ -31,6 +31,7 @@ public:
 private:
 	FReply OnToggle();
 	FReply OnHarvest();
+	FReply OnCollectGaps();
 	FReply OnExportUntranslated();
 	FReply OnOpenDictionary();
 	FReply OnReloadDictionary();

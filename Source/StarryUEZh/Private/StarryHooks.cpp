@@ -6,6 +6,12 @@
 #include "StarryUEZh.h"
 
 #include "Containers/Ticker.h"
+#include "AnimStateNode.h"
+#include "AnimStateNodeBase.h"
+#include "AnimStateTransitionNode.h"
+#include "Animation/AnimBlueprint.h"
+#include "Animation/Skeleton.h"
+#include "AnimationStateMachineGraph.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "Fonts/FontMeasure.h"
 #include "Framework/Application/SlateApplication.h"
@@ -14,7 +20,13 @@
 #include "HAL/FileManager.h"
 #include "Interfaces/IPluginManager.h"
 #include "HAL/PlatformProcess.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetRegistry/IAssetRegistry.h"
 #include "Materials/MaterialExpression.h"
+#include "Materials/MaterialExpressionFunctionInput.h"
+#include "Materials/MaterialExpressionFunctionOutput.h"
+#include "Materials/MaterialExpressionMaterialFunctionCall.h"
+#include "Materials/MaterialFunction.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Modules/ModuleManager.h"
@@ -691,6 +703,109 @@ namespace
 			}
 		}
 
+		// Material function input / output pins are stored inside the function
+		// assets, not in reflection data. Load every function and collect the
+		// names shown on call nodes.
+		int32 FunctionInputCount = 0;
+		{
+			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+			TArray<FAssetData> FunctionAssets;
+			AssetRegistry.GetAssetsByClass(UMaterialFunction::StaticClass()->GetClassPathName(), FunctionAssets, true);
+			for (const FAssetData& Asset : FunctionAssets)
+			{
+				UMaterialFunction* Function = Cast<UMaterialFunction>(Asset.GetAsset());
+				if (!Function)
+				{
+					continue;
+				}
+				TArray<FFunctionExpressionInput> Inputs;
+				TArray<FFunctionExpressionOutput> Outputs;
+				Function->GetInputsAndOutputs(Inputs, Outputs);
+				for (const FFunctionExpressionInput& Input : Inputs)
+				{
+					if (Input.ExpressionInput)
+					{
+						Add(Input.ExpressionInput->InputName.ToString(), TEXT("MaterialFunctionInput"));
+						Add(Input.ExpressionInput->Description, TEXT("MaterialFunctionInputTooltip"));
+						++FunctionInputCount;
+					}
+				}
+				for (const FFunctionExpressionOutput& Output : Outputs)
+				{
+					if (Output.ExpressionOutput)
+					{
+						Add(Output.ExpressionOutput->OutputName.ToString(), TEXT("MaterialFunctionOutput"));
+						++FunctionInputCount;
+					}
+				}
+			}
+			UE_LOG(LogStarryUEZh, Log, TEXT("材质函数引脚扫描：%d 个资产，%d 个输入/输出"), FunctionAssets.Num(), FunctionInputCount);
+		}
+
+		// Animation blueprint state machine states and transitions are graph
+		// nodes inside the AnimBP asset, so a reflection pass never sees them.
+		// Load each blueprint and walk its state machine graphs.
+		int32 AnimStateCount = 0;
+		{
+			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+			TArray<FAssetData> AnimAssets;
+			AssetRegistry.GetAssetsByClass(UAnimBlueprint::StaticClass()->GetClassPathName(), AnimAssets, true);
+			for (const FAssetData& Asset : AnimAssets)
+			{
+				UAnimBlueprint* Blueprint = Cast<UAnimBlueprint>(Asset.GetAsset());
+				if (!Blueprint)
+				{
+					continue;
+				}
+				ForEachObjectWithPackage(Blueprint->GetPackage(), [&Add, &AnimStateCount](UObject* Object)
+				{
+					UAnimationStateMachineGraph* Graph = Cast<UAnimationStateMachineGraph>(Object);
+					if (!Graph)
+					{
+						return true;
+					}
+					for (UEdGraphNode* Node : Graph->Nodes)
+					{
+						if (const UAnimStateNodeBase* StateNode = Cast<UAnimStateNodeBase>(Node))
+						{
+							Add(StateNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString(), TEXT("AnimState"));
+							++AnimStateCount;
+						}
+					}
+					return true;
+				}, true, RF_NoFlags, EInternalObjectFlags::None);
+			}
+			UE_LOG(LogStarryUEZh, Log, TEXT("动画蓝图状态扫描：%d 个蓝图，%d 个状态/过渡"), AnimAssets.Num(), AnimStateCount);
+		}
+
+		// Skeleton bone names are identifiers, but the skeleton tree is a
+		// display surface. Collect them so users can opt into a display-only
+		// translation table; the underlying FName is never changed.
+		int32 BoneCount = 0;
+		{
+			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+			TArray<FAssetData> SkeletonAssets;
+			AssetRegistry.GetAssetsByClass(USkeleton::StaticClass()->GetClassPathName(), SkeletonAssets, true);
+			for (const FAssetData& Asset : SkeletonAssets)
+			{
+				USkeleton* Skeleton = Cast<USkeleton>(Asset.GetAsset());
+				if (!Skeleton)
+				{
+					continue;
+				}
+				const FReferenceSkeleton& ReferenceSkeleton = Skeleton->GetReferenceSkeleton();
+				for (int32 BoneIndex = 0; BoneIndex < ReferenceSkeleton.GetNum(); ++BoneIndex)
+				{
+					Add(ReferenceSkeleton.GetBoneName(BoneIndex).ToString(), TEXT("BoneName"));
+					++BoneCount;
+				}
+			}
+			UE_LOG(LogStarryUEZh, Log, TEXT("骨骼扫描：%d 个骨架，%d 个骨骼"), SkeletonAssets.Num(), BoneCount);
+		}
+
 		int32 FunctionCount = 0;
 		for (TObjectIterator<UFunction> It; It; ++It)
 		{
@@ -813,6 +928,35 @@ namespace
 					Harvested.FindOrAdd(Text) = FileCategory;
 				};
 
+				// Niagara module assets store parameter names as fully qualified
+				// strings ("Module.Noise Strength"). The UI shows the leaf name,
+				// so collect every spaced leaf that looks like a display name.
+				auto ConsiderParameter = [&Harvested](const FString& Text)
+				{
+					static const TCHAR* Prefixes[] = {
+						TEXT("Local.Module."), TEXT("Output.Module."), TEXT("Module."),
+						TEXT("Particles."), TEXT("Emitter."), TEXT("System."),
+						TEXT("Transient."), TEXT("Engine.")
+					};
+					for (const TCHAR* Prefix : Prefixes)
+					{
+						if (!Text.StartsWith(Prefix, ESearchCase::CaseSensitive))
+						{
+							continue;
+						}
+						const FString Leaf = Text.Mid(FCString::Strlen(Prefix));
+						if (Leaf.Len() < 3 || Leaf.Len() > 80
+							|| !Leaf.Contains(TEXT(" "))
+							|| !FChar::IsUpper(Leaf[0])
+							|| !LooksHarvestable(Leaf))
+						{
+							return;
+						}
+						Harvested.FindOrAdd(Leaf) = TEXT("NiagaraParameter");
+						return;
+					}
+				};
+
 				for (const uint8 Byte : Data)
 				{
 					if (Byte >= 32 && Byte < 127)
@@ -822,12 +966,14 @@ namespace
 					else if (!Current.IsEmpty())
 					{
 						Consider(Current);
+						ConsiderParameter(Current);
 						Current.Reset();
 					}
 				}
 				if (!Current.IsEmpty())
 				{
 					Consider(Current);
+					ConsiderParameter(Current);
 				}
 			}
 		};

@@ -32,6 +32,7 @@ public class StarryUEZh : ModuleRules
 			"Kismet",
 			"GraphEditor",
 			"MaterialEditor",
+			"AnimGraph",
 			"Niagara",
 			"NiagaraEditor"
 		});

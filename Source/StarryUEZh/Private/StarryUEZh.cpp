@@ -9,10 +9,43 @@
 
 #include "Containers/Ticker.h"
 #include "Framework/Docking/TabManager.h"
+#include "HAL/FileManager.h"
+#include "HAL/PlatformTime.h"
+#include "Interfaces/IPluginManager.h"
 #include "Misc/CommandLine.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Misc/Paths.h"
 
 DEFINE_LOG_CATEGORY(LogStarryUEZh);
+
+namespace
+{
+	FString GetDictionaryDirectory()
+	{
+		const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("StarryUEZh"));
+		return Plugin.IsValid() ? FPaths::Combine(Plugin->GetContentDir(), TEXT("Dictionary")) : FString();
+	}
+
+	FDateTime GetNewestDictionaryWrite(const FString& Directory)
+	{
+		FDateTime Newest = FDateTime::MinValue();
+		if (Directory.IsEmpty())
+		{
+			return Newest;
+		}
+		TArray<FString> Files;
+		IFileManager::Get().FindFiles(Files, *(Directory / TEXT("*.json")), true, false);
+		for (const FString& File : Files)
+		{
+			const FDateTime Time = IFileManager::Get().GetTimeStamp(*(Directory / File));
+			if (Time > Newest)
+			{
+				Newest = Time;
+			}
+		}
+		return Newest;
+	}
+}
 
 void FStarryUEZhModule::StartupModule()
 {
@@ -40,6 +73,30 @@ void FStarryUEZhModule::StartupModule()
 			StarryHooks::DumpGaps();
 			return true;
 		}), 180.0f);
+
+		// Watch Content/Dictionary so edits made outside the editor show up
+		// without a manual reload. Wait 1.5 s after the last write so a file
+		// that is still being saved is not read half-way.
+		const FString WatchDirectory = GetDictionaryDirectory();
+		FDateTime LastWrite = GetNewestDictionaryWrite(WatchDirectory);
+		double LastChangeAt = 0.0;
+		DictionaryTickerHandle = FTSTicker::GetCoreTicker().AddTicker(
+			FTickerDelegate::CreateLambda([WatchDirectory, LastWrite, LastChangeAt](float) mutable
+		{
+			const FDateTime Newest = GetNewestDictionaryWrite(WatchDirectory);
+			if (Newest > LastWrite)
+			{
+				LastWrite = Newest;
+				LastChangeAt = FPlatformTime::Seconds();
+				return true;
+			}
+			if (LastChangeAt > 0.0 && FPlatformTime::Seconds() - LastChangeAt >= 1.5)
+			{
+				LastChangeAt = 0.0;
+				FStarryUI::ReloadDictionary();
+			}
+			return true;
+		}), 1.0f);
 
 		if (FParse::Param(FCommandLine::Get(), TEXT("StarryPanel")))
 		{
@@ -103,6 +160,11 @@ void FStarryUEZhModule::ShutdownModule()
 	{
 		FTSTicker::GetCoreTicker().RemoveTicker(GapsTickerHandle);
 		GapsTickerHandle.Reset();
+	}
+	if (DictionaryTickerHandle.IsValid())
+	{
+		FTSTicker::GetCoreTicker().RemoveTicker(DictionaryTickerHandle);
+		DictionaryTickerHandle.Reset();
 	}
 	StarryHooks::DumpGaps();
 	FStarryUI::Unregister();

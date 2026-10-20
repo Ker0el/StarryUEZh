@@ -16,4 +16,5 @@ public:
 
 private:
 	FTSTicker::FDelegateHandle GapsTickerHandle;
+	FTSTicker::FDelegateHandle DictionaryTickerHandle;
 };

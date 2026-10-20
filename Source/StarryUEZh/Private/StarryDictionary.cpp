@@ -82,7 +82,10 @@ bool FStarryDictionary::LoadDictionaries()
 	const FString NoTranslatePath = FPaths::Combine(DictionaryDir, TEXT("notranslate.json"));
 	const FString NiagaraPath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_niagara.json"));
 	const FString NiagaraEnginePath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_niagara_engine.json"));
+	const FString NiagaraParamsPath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_niagara_params.json"));
 	const FString MaterialFuncsPath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_material_funcs.json"));
+	const FString MaterialPinsPath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_material_pins.json"));
+	const FString BonesPath = FPaths::Combine(DictionaryDir, TEXT("zh_cn_bones.json"));
 	const FString GlossaryPath = FPaths::Combine(DictionaryDir, TEXT("glossary.json"));
 	const FString ManualPath = FPaths::Combine(DictionaryDir, TEXT("manual_zh.json"));
 
@@ -135,12 +138,39 @@ bool FStarryDictionary::LoadDictionaries()
 		}
 	}
 
+	if (FPaths::FileExists(NiagaraParamsPath))
+	{
+		Added = 0;
+		if (LoadFile(NiagaraParamsPath, false, Added))
+		{
+			UE_LOG(LogStarryUEZh, Log, TEXT("Niagara 模块参数词库：%d 条（%s）"), Added, *NiagaraParamsPath);
+		}
+	}
+
 	if (FPaths::FileExists(MaterialFuncsPath))
 	{
 		Added = 0;
 		if (LoadFile(MaterialFuncsPath, false, Added))
 		{
 			UE_LOG(LogStarryUEZh, Log, TEXT("材质函数词库：%d 条（%s）"), Added, *MaterialFuncsPath);
+		}
+	}
+
+	if (FPaths::FileExists(MaterialPinsPath))
+	{
+		Added = 0;
+		if (LoadFile(MaterialPinsPath, false, Added))
+		{
+			UE_LOG(LogStarryUEZh, Log, TEXT("材质函数引脚词库：%d 条（%s）"), Added, *MaterialPinsPath);
+		}
+	}
+
+	if (FPaths::FileExists(BonesPath))
+	{
+		Added = 0;
+		if (LoadFile(BonesPath, false, Added))
+		{
+			UE_LOG(LogStarryUEZh, Log, TEXT("骨骼显示名词库：%d 条（%s）"), Added, *BonesPath);
 		}
 	}
 
@@ -170,7 +200,10 @@ bool FStarryDictionary::LoadDictionaries()
 	KnownFiles.Add(TEXT("zh_cn_material.json"));
 	KnownFiles.Add(TEXT("zh_cn_niagara.json"));
 	KnownFiles.Add(TEXT("zh_cn_niagara_engine.json"));
+	KnownFiles.Add(TEXT("zh_cn_niagara_params.json"));
 	KnownFiles.Add(TEXT("zh_cn_material_funcs.json"));
+	KnownFiles.Add(TEXT("zh_cn_material_pins.json"));
+	KnownFiles.Add(TEXT("zh_cn_bones.json"));
 	KnownFiles.Add(TEXT("glossary.json"));
 	KnownFiles.Add(TEXT("manual_zh.json"));
 
@@ -607,6 +640,14 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 		OutTranslation = *Found;
 		return true;
 	}
+	// "AmbientOcclusion" and "CenterPosition" match spaced entries through the
+	// compact index. Do this before the asset-name guard, otherwise pins whose
+	// names happen to be asset names stay English.
+	if (const FString* Found = CompactEntries.Find(NormalizeKey(Source)))
+	{
+		OutTranslation = *Found;
+		return true;
+	}
 
 	// Material function asset node titles and material function enum values are
 	// often asset names, so translate them compositionally before the asset guard.
@@ -645,6 +686,11 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 
 	// Exact trimmed entries also bypass the asset-name guard.
 	if (const FString* Found = Entries.Find(Trimmed))
+	{
+		OutTranslation = Lead + Prefix + *Found + Trail;
+		return true;
+	}
+	if (const FString* Found = CompactEntries.Find(NormalizeKey(Trimmed)))
 	{
 		OutTranslation = Lead + Prefix + *Found + Trail;
 		return true;

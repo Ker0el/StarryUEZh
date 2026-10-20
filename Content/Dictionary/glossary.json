@@ -63,6 +63,23 @@
     "Mobile Depth of Field": "移动景深",
     "Ray Tracing Ambient Occlusion": "光线追踪环境光遮蔽",
     "Dirt Mask": "污渍遮罩",
-    "Lens|Dirt Mask": "透镜|污渍遮罩"
+    "Lens|Dirt Mask": "透镜|污渍遮罩",
+    "Parallax UVs": "视差 UV",
+    "Offset Only": "仅偏移",
+    "Min Steps": "最小步数",
+    "Max Steps": "最大步数",
+    "Steps": "步数",
+    "Heightmap Channel": "高度图通道",
+    "Tangent Light Vector": "切线空间光照向量",
+    "Use World Coordinates": "使用世界坐标",
+    "Specify Manual Texture Size": "指定手动纹理尺寸",
+    "Manual Texture Size": "手动纹理尺寸",
+    "Render Shadows (Occlusion Mapping)": "渲染阴影（遮蔽映射）",
+    "Shadow Steps": "阴影步数",
+    "Shadow Penumbra": "阴影半影",
+    "Transform To VertexNormal": "变换到顶点法线",
+    "Material Complexity - Steps Debug": "材质复杂度 - 步骤调试",
+    "Max Expensive Steps Debug Color": "最大高开销步骤调试颜色",
+    "Parallax Only Mapping": "仅视差映射"
   }
 }

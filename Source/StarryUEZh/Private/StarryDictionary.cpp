@@ -754,29 +754,36 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 		static const TCHAR* Separators[] = { TEXT(" ("), TEXT(" '"), TEXT(" ["), TEXT(" <"), TEXT("(") };
 		for (const TCHAR* Separator : Separators)
 		{
-			const int32 Index = Trimmed.Find(Separator, ESearchCase::CaseSensitive, ESearchDir::FromStart);
-			if (Index <= 1)
+			// Try the right-most suffix first: "Render Shadows (Occlusion Mapping) (SB)"
+			// must translate the full head, not just "Render Shadows".
+			int32 SearchFrom = INDEX_NONE;
+			while (true)
 			{
-				continue;
-			}
-			const FString Head = Trimmed.Left(Index).TrimEnd();
-			const FString Tail = Trimmed.Mid(Index);
-			if (const FString* HeadTranslation = Lookup(Head))
-			{
-				// Translate the parameter name inside "Head (Parameter)" too,
-				// so "Static Switch (Write Material Random)" becomes fully Chinese.
-				FString RenderedTail = Tail;
-				if (Tail.StartsWith(TEXT(" (")) && Tail.EndsWith(TEXT(")")))
+				const int32 Index = Trimmed.Find(Separator, ESearchCase::CaseSensitive, ESearchDir::FromEnd, SearchFrom);
+				if (Index <= 1)
 				{
-					const FString Inner = Tail.Mid(2, Tail.Len() - 3);
-					FString InnerTranslation;
-					if (Translate(Inner, InnerTranslation))
-					{
-						RenderedTail = TEXT("（") + InnerTranslation + TEXT("）");
-					}
+					break;
 				}
-				OutTranslation = Lead + Prefix + *HeadTranslation + RenderedTail + Trail;
-				return true;
+				const FString Head = Trimmed.Left(Index).TrimEnd();
+				const FString Tail = Trimmed.Mid(Index);
+				if (const FString* HeadTranslation = Lookup(Head))
+				{
+					// Translate the parameter name inside "Head (Parameter)" too,
+					// so "Static Switch (Write Material Random)" becomes fully Chinese.
+					FString RenderedTail = Tail;
+					if (Tail.StartsWith(TEXT(" (")) && Tail.EndsWith(TEXT(")")))
+					{
+						const FString Inner = Tail.Mid(2, Tail.Len() - 3);
+						FString InnerTranslation;
+						if (Translate(Inner, InnerTranslation))
+						{
+							RenderedTail = TEXT("（") + InnerTranslation + TEXT("）");
+						}
+					}
+					OutTranslation = Lead + Prefix + *HeadTranslation + RenderedTail + Trail;
+					return true;
+				}
+				SearchFrom = Index - 1;
 			}
 		}
 

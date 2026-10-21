@@ -4,14 +4,14 @@
 
 <h1 align="center">UnrealEngine-Chinese</h1>
 
-<p align="center">虚幻引擎 5.4 到 5.8 编辑器汉化插件 · 星空汉化</p>
+<p align="center">虚幻引擎 5.3 到 5.8 编辑器汉化插件 · 星空汉化</p>
 
 <p align="center">
   蓝图 · 材质 · Niagara · 动画蓝图 · 细节面板 · 菜单
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Unreal%20Engine-5.4%20%7C%205.5%20%7C%205.6%20%7C%205.7%20%7C%205.8-313131?logo=unrealengine&logoColor=white" alt="Unreal Engine">
+  <img src="https://img.shields.io/badge/Unreal%20Engine-5.3%20%7C%205.4%20%7C%205.5%20%7C%205.6%20%7C%205.7%20%7C%205.8-313131?logo=unrealengine&logoColor=white" alt="Unreal Engine">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/Code-MIT-green" alt="MIT">
   <img src="https://img.shields.io/badge/Dictionary-CC%20BY--SA%204.0-orange" alt="CC BY-SA 4.0">
@@ -38,11 +38,12 @@
 
 | 引擎版本 | 压缩包 |
 |---|---|
-| UE 5.4 | `StarryUEZh_v0.3.1_UE5.4.zip` |
-| UE 5.5 | `StarryUEZh_v0.3.1_UE5.5.zip` |
-| UE 5.6 | `StarryUEZh_v0.3.1_UE5.6.zip` |
-| UE 5.7 | `StarryUEZh_v0.3.1_UE5.7.zip` |
-| UE 5.8 | `StarryUEZh_v0.3.1_UE5.8.zip` |
+| UE 5.3 | `StarryUEZh_v0.3.2_UE5.3.zip` |
+| UE 5.4 | `StarryUEZh_v0.3.2_UE5.4.zip` |
+| UE 5.5 | `StarryUEZh_v0.3.2_UE5.5.zip` |
+| UE 5.6 | `StarryUEZh_v0.3.2_UE5.6.zip` |
+| UE 5.7 | `StarryUEZh_v0.3.2_UE5.7.zip` |
+| UE 5.8 | `StarryUEZh_v0.3.2_UE5.8.zip` |
 
 每个包里是同一个插件，只有 `Binaries\Win64` 下的 DLL 不同，不能混用。
 
@@ -108,7 +109,7 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 产物在 `Plugins\StarryUEZh\Binaries\Win64\UnrealEditor-StarryUEZh.dll`。
 
 - UE 5.8 使用引擎自带的 Detours 模块。
-- UE 5.4 到 5.7 使用 `ThirdParty\Detours` 里的 Microsoft Detours v4.0.1。
+- UE 5.3 到 5.7 使用 `ThirdParty\Detours` 里的 Microsoft Detours v4.0.1。
 - 插件依赖 `AnimGraph`、`NiagaraEditor`、`MaterialEditor`、`BlueprintGraph` 等编辑器模块。
 
 ## 已知限制
@@ -116,8 +117,8 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 1. 只覆盖 Slate 显示层的文字。Canvas 直绘文字和第三方插件自绘界面可能保持原样。
 2. 切换语言后，已经打开的材质 / 蓝图资产编辑器建议重新打开一次。
 3. 极少数和界面词条同名的用户变量名可能被显示层替换，只影响显示，不影响数据。
-4. 5.4 到 5.8 都有对应编译产物，5.8 做过界面验收，5.4 到 5.7 做过模块加载验证。
-5. 5.3 及以下没有适配。
+4. 5.3 到 5.8 都有对应编译产物，5.8 做过界面验收，5.3 到 5.7 做过模块加载验证。
+5. 5.2 及以下没有适配。
 
 ## 许可证
 
@@ -128,6 +129,6 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 
 ## English
 
-StarryUEZh is a Chinese localization plugin for the Unreal Engine 5.4 to 5.8 editor. It translates Blueprint, Material, Niagara and Animation Blueprint node titles, pins, parameters, details panels, menus and tooltips at the Slate display layer. It supports Chinese/English switching and bilingual node search, adds an in-editor scanning and translation panel with optional DeepSeek support, and never modifies source code, asset names, asset paths or packaged games.
+StarryUEZh is a Chinese localization plugin for the Unreal Engine 5.3 to 5.8 editor. It translates Blueprint, Material, Niagara and Animation Blueprint node titles, pins, parameters, details panels, menus and tooltips at the Slate display layer. It supports Chinese/English switching and bilingual node search, adds an in-editor scanning and translation panel with optional DeepSeek support, and never modifies source code, asset names, asset paths or packaged games.
 
 Download the package matching your engine version from Releases. Code is MIT licensed; dictionary data is CC BY-SA 4.0.

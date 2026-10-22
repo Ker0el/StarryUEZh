@@ -130,7 +130,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 	[
 		SNew(SBorder)
 		.Padding(12.0f)
-		.BorderImage(FAppStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+		.BorderImage(FAppStyle::Get().GetBrush(TEXT("ToolPanel.GroupBorder")))
 		[
 			SNew(SVerticalBox)
 
@@ -139,7 +139,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 			[
 				SNew(STextBlock)
 				.Text(LOCTEXT("PanelTitle", "星空汉化"))
-				.Font(FAppStyle::GetFontStyle(TEXT("HeadingSmall")))
+				.Font(FAppStyle::Get().GetFontStyle(TEXT("HeadingSmall")))
 			]
 
 			+ SVerticalBox::Slot()
@@ -163,7 +163,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 			.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 			[
 				SNew(SBorder)
-				.BorderImage(FAppStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+				.BorderImage(FAppStyle::Get().GetBrush(TEXT("ToolPanel.GroupBorder")))
 				.Padding(6.0f)
 				[
 					SNew(SVerticalBox)
@@ -173,7 +173,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 					[
 						SNew(STextBlock)
 						.Text(LOCTEXT("UsageTitle", "使用步骤"))
-						.Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
+						.Font(FAppStyle::Get().GetFontStyle(TEXT("SmallFont")))
 					]
 
 					+ SVerticalBox::Slot()
@@ -199,7 +199,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 			.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 			[
 				SNew(SBorder)
-				.BorderImage(FAppStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+				.BorderImage(FAppStyle::Get().GetBrush(TEXT("ToolPanel.GroupBorder")))
 				.Padding(6.0f)
 				[
 					SNew(SVerticalBox)
@@ -437,7 +437,7 @@ void SStarryUEZhPanel::Construct(const FArguments& InArgs)
 			.FillHeight(1.0f)
 			[
 				SNew(SBorder)
-				.BorderImage(FAppStyle::GetBrush(TEXT("ToolPanel.GroupBorder")))
+				.BorderImage(FAppStyle::Get().GetBrush(TEXT("ToolPanel.GroupBorder")))
 				.Padding(4.0f)
 				[
 					SAssignNew(ScanListView, SListView<TSharedPtr<FStarryScanRow>>)

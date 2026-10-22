@@ -60,10 +60,25 @@ namespace
 	// ---------------------------------------------------------------------
 	const TCHAR* Export_SetText =
 		TEXT("?SetText@FPlainTextLayoutMarshaller@@UEAAXAEBVFString@@AEAVFTextLayout@@@Z");
+	// 5.0 - 5.2 only have the ComputeDesiredSize overload that also takes the
+	// text block style. The two argument form appears in 5.3.
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 	const TCHAR* Export_ComputeDesiredSize =
 		TEXT("?ComputeDesiredSize@FSlateTextBlockLayout@@QEAA?AU?$TVector2@N@Math@UE@@AEBUFWidgetDesiredSizeArgs@1@M@Z");
+#else
+	const TCHAR* Export_ComputeDesiredSize =
+		TEXT("?ComputeDesiredSize@FSlateTextBlockLayout@@QEAA?AU?$TVector2@N@Math@UE@@AEBUFWidgetDesiredSizeArgs@1@MAEBUFTextBlockStyle@@@Z");
+#endif
+	// 5.2 moved the return type to FDeprecateSlateVector2D and dropped the
+	// virtual qualifier. 5.0 / 5.1 still return FVector2D from a virtual
+	// function, so the mangled name differs in both the qualifier and the type.
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 2
 	const TCHAR* Export_MeasureText =
 		TEXT("?Measure@FSlateFontMeasure@@QEBA?AUFDeprecateSlateVector2D@@AEBVFText@@AEBUFSlateFontInfo@@M@Z");
+#else
+	const TCHAR* Export_MeasureText =
+		TEXT("?Measure@FSlateFontMeasure@@UEBA?AU?$TVector2@N@Math@UE@@AEBVFText@@AEBUFSlateFontInfo@@M@Z");
+#endif
 	const TCHAR* Export_MakeText =
 		TEXT("?MakeText@FSlateDrawElement@@SAXAEAVFSlateWindowElementList@@IAEBUFPaintGeometry@@AEBVFString@@AEBUFSlateFontInfo@@W4ESlateDrawEffect@@AEBUFLinearColor@@@Z");
 	const TCHAR* Export_UpdateSearchData =
@@ -80,14 +95,25 @@ namespace
 		TEXT("?SetText@FRichTextLayoutMarshaller@@UEAAXAEBVFString@@AEAVFTextLayout@@@Z");
 
 	using FSetTextFn = void (*)(void*, const FString&, FTextLayout&);
+	// 5.0 / 5.1 measure into FVector2D, 5.2 and newer into
+	// FDeprecateSlateVector2D (aliased as FDeprecateVector2DResult).
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 2
+	using FMeasureResult = UE::Slate::FDeprecateVector2DResult;
+#else
+	using FMeasureResult = FVector2D;
+#endif
 	// MSVC passes the hidden return buffer for a member function in RDX:
 	//   RCX = this, RDX = return buffer, R8 = first arg, ...
 	// A function that returns a class by value must also hand that buffer back
 	// in RAX. Callers such as SSlowTaskWidget::GetMainTextFont() read the result
 	// through that register, so a void hook leaves them with a stale pointer and
 	// they crash on the next dereference.
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 	using FComputeDesiredSizeFn = FVector2D* (*)(FSlateTextBlockLayout*, FVector2D*, const FSlateTextBlockLayout::FWidgetDesiredSizeArgs&, float);
-	using FMeasureTextFn = UE::Slate::FDeprecateVector2DResult* (*)(const FSlateFontMeasure*, UE::Slate::FDeprecateVector2DResult*, const FText&, const FSlateFontInfo&, float);
+#else
+	using FComputeDesiredSizeFn = FVector2D* (*)(FSlateTextBlockLayout*, FVector2D*, const FSlateTextBlockLayout::FWidgetDesiredSizeArgs&, float, const FTextBlockStyle&);
+#endif
+	using FMeasureTextFn = FMeasureResult* (*)(const FSlateFontMeasure*, FMeasureResult*, const FText&, const FSlateFontInfo&, float);
 	using FMakeTextFn = void (*)(FSlateWindowElementList&, uint32, const FPaintGeometry&, const FString&, const FSlateFontInfo&, ESlateDrawEffect, const FLinearColor&);
 	using FUpdateSearchDataFn = void (*)(FEdGraphSchemaAction*, FText, FText, FText, FText);
 	using FNiagaraMatchFn = bool (*)(const FText&, const TSharedPtr<FNiagaraMenuAction_Generic>&);
@@ -225,6 +251,22 @@ namespace
 		return FPlatformProcess::GetDllExport(Handle, ExportName);
 	}
 
+	// IAssetRegistry::GetAssetsByClass takes a class path in 5.1 and newer, and
+	// a plain class name before that. UClass has no GetClassPathName in 5.0.
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 1
+	using FAssetClassQuery = FTopLevelAssetPath;
+	FORCEINLINE FAssetClassQuery MakeAssetClassQuery(const UClass* Class)
+	{
+		return Class->GetClassPathName();
+	}
+#else
+	using FAssetClassQuery = FName;
+	FORCEINLINE FAssetClassQuery MakeAssetClassQuery(const UClass* Class)
+	{
+		return Class->GetFName();
+	}
+#endif
+
 	bool InstallOne(const TCHAR* ModuleName, const TCHAR* ExportName, void* Hook, void** RealSlot, const TCHAR* Label)
 	{
 		void* Target = FindExport(ModuleName, ExportName);
@@ -359,6 +401,7 @@ namespace
 		}
 	}
 
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 	FVector2D* Hook_ComputeDesiredSize(FSlateTextBlockLayout* This, FVector2D* OutResult,
 		const FSlateTextBlockLayout::FWidgetDesiredSizeArgs& Args, float Scale)
 	{
@@ -376,8 +419,27 @@ namespace
 		}
 		return OutResult;
 	}
+#else
+	FVector2D* Hook_ComputeDesiredSize(FSlateTextBlockLayout* This, FVector2D* OutResult,
+		const FSlateTextBlockLayout::FWidgetDesiredSizeArgs& Args, float Scale, const FTextBlockStyle& Style)
+	{
+		if (bRefreshPending.load(std::memory_order_relaxed))
+		{
+			This->DirtyContent();
+		}
+		if (Real_ComputeDesiredSize)
+		{
+			return Real_ComputeDesiredSize(This, OutResult, Args, Scale, Style);
+		}
+		if (OutResult)
+		{
+			*OutResult = FVector2D::ZeroVector;
+		}
+		return OutResult;
+	}
+#endif
 
-	UE::Slate::FDeprecateVector2DResult* Hook_MeasureText(const FSlateFontMeasure* This, UE::Slate::FDeprecateVector2DResult* OutResult,
+	FMeasureResult* Hook_MeasureText(const FSlateFontMeasure* This, FMeasureResult* OutResult,
 		const FText& Text, const FSlateFontInfo& FontInfo, float FontScale)
 	{
 		if (Real_MeasureText)
@@ -392,7 +454,7 @@ namespace
 		}
 		if (OutResult)
 		{
-			*OutResult = UE::Slate::FDeprecateVector2DResult(FVector2f::ZeroVector);
+			*OutResult = FMeasureResult(0.0f, 0.0f);
 		}
 		return OutResult;
 	}
@@ -716,7 +778,7 @@ namespace
 			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 			TArray<FAssetData> FunctionAssets;
-			AssetRegistry.GetAssetsByClass(UMaterialFunction::StaticClass()->GetClassPathName(), FunctionAssets, true);
+			AssetRegistry.GetAssetsByClass(MakeAssetClassQuery(UMaterialFunction::StaticClass()), FunctionAssets, true);
 			for (const FAssetData& Asset : FunctionAssets)
 			{
 				UMaterialFunction* Function = Cast<UMaterialFunction>(Asset.GetAsset());
@@ -756,7 +818,7 @@ namespace
 			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 			TArray<FAssetData> AnimAssets;
-			AssetRegistry.GetAssetsByClass(UAnimBlueprint::StaticClass()->GetClassPathName(), AnimAssets, true);
+			AssetRegistry.GetAssetsByClass(MakeAssetClassQuery(UAnimBlueprint::StaticClass()), AnimAssets, true);
 			for (const FAssetData& Asset : AnimAssets)
 			{
 				UAnimBlueprint* Blueprint = Cast<UAnimBlueprint>(Asset.GetAsset());
@@ -793,7 +855,7 @@ namespace
 			FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 			IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 			TArray<FAssetData> SkeletonAssets;
-			AssetRegistry.GetAssetsByClass(USkeleton::StaticClass()->GetClassPathName(), SkeletonAssets, true);
+			AssetRegistry.GetAssetsByClass(MakeAssetClassQuery(USkeleton::StaticClass()), SkeletonAssets, true);
 			for (const FAssetData& Asset : SkeletonAssets)
 			{
 				USkeleton* Skeleton = Cast<USkeleton>(Asset.GetAsset());

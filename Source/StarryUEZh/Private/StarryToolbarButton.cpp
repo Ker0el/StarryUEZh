@@ -40,7 +40,7 @@ void SStarryToolbarButton::Construct(const FArguments& InArgs)
 			.VAlign(VAlign_Center)
 			[
 				SNew(SImage)
-				.Image(FAppStyle::GetBrush(TEXT("Icons.Star")))
+				.Image(FAppStyle::Get().GetBrush(TEXT("Icons.Star")))
 			]
 
 			+ SHorizontalBox::Slot()

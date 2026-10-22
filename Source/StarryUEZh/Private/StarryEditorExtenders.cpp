@@ -146,6 +146,8 @@ namespace StarryEditorExtenders
 							return;
 						}
 						FToolMenuSection& Section = Extended->FindOrAddSection(TEXT("StarryUEZh"));
+						// The tooltip argument was added in 5.2.
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 2
 						Section.AddEntry(FToolMenuEntry::InitWidget(
 							TEXT("StarryUEZh.AssetEditorButton"),
 							SNew(SStarryToolbarButton),
@@ -154,6 +156,15 @@ namespace StarryEditorExtenders
 							true,
 							true,
 							LOCTEXT("StarryToolbarTip", "左键切换中文 / 英文，右键打开词条菜单")));
+#else
+						Section.AddEntry(FToolMenuEntry::InitWidget(
+							TEXT("StarryUEZh.AssetEditorButton"),
+							SNew(SStarryToolbarButton),
+							LOCTEXT("StarryToolbarLabel", "星空汉化"),
+							false,
+							true,
+							true));
+#endif
 						Toolkit->RegenerateMenusAndToolbars();
 					});
 			}

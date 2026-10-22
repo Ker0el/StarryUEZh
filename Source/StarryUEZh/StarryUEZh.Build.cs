@@ -9,7 +9,8 @@ public class StarryUEZh : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		CppStandard = CppStandardVersion.Cpp20;
-		bWarningsAsErrors = false;
+		// ModuleRules.bWarningsAsErrors only exists from 5.3. The target rules
+		// already set bWarningsAsErrors = false in every build host.
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{

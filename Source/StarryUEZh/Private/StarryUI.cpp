@@ -73,6 +73,17 @@ namespace
 	};
 
 	TSharedPtr<FStarryInputProcessor> GInputProcessor;
+
+	// UMaterial::GetExpressionCollection only exists from 5.1. 5.0 keeps the
+	// expression array as a public member on the material itself.
+	int32 NumMaterialExpressions(const UMaterial* Material)
+	{
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 1
+		return Material->GetExpressionCollection().Expressions.Num();
+#else
+		return Material->Expressions.Num();
+#endif
+	}
 }
 
 FStarryCommands::FStarryCommands()
@@ -289,7 +300,7 @@ void FStarryUI::OpenTestMaterial()
 		return;
 	}
 
-	if (Material->GetExpressionCollection().Expressions.Num() == 0)
+	if (NumMaterialExpressions(Material) == 0)
 	{
 		UMaterialEditingLibrary::CreateMaterialExpression(Material, UMaterialExpressionTextureCoordinate::StaticClass(), -760, -180);
 		UMaterialEditingLibrary::CreateMaterialExpression(Material, UMaterialExpressionTextureSample::StaticClass(), -520, -160);
@@ -307,7 +318,7 @@ void FStarryUI::OpenTestMaterial()
 		{
 			AssetEditorSubsystem->OpenEditorForAsset(Material);
 			UE_LOG(LogStarryUEZh, Log, TEXT("已打开测试材质：%s，表达式 %d 个"),
-				*Material->GetPathName(), Material->GetExpressionCollection().Expressions.Num());
+				*Material->GetPathName(), NumMaterialExpressions(Material));
 			return;
 		}
 	}

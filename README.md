@@ -38,12 +38,12 @@
 
 | 引擎版本 | 压缩包 |
 |---|---|
-| UE 5.3 | `StarryUEZh_v0.3.2_UE5.3.zip` |
-| UE 5.4 | `StarryUEZh_v0.3.2_UE5.4.zip` |
-| UE 5.5 | `StarryUEZh_v0.3.2_UE5.5.zip` |
-| UE 5.6 | `StarryUEZh_v0.3.2_UE5.6.zip` |
-| UE 5.7 | `StarryUEZh_v0.3.2_UE5.7.zip` |
-| UE 5.8 | `StarryUEZh_v0.3.2_UE5.8.zip` |
+| UE 5.3 | `StarryUEZh_v0.3.3_UE5.3.zip` |
+| UE 5.4 | `StarryUEZh_v0.3.3_UE5.4.zip` |
+| UE 5.5 | `StarryUEZh_v0.3.3_UE5.5.zip` |
+| UE 5.6 | `StarryUEZh_v0.3.3_UE5.6.zip` |
+| UE 5.7 | `StarryUEZh_v0.3.3_UE5.7.zip` |
+| UE 5.8 | `StarryUEZh_v0.3.3_UE5.8.zip` |
 
 每个包里是同一个插件，只有 `Binaries\Win64` 下的 DLL 不同，不能混用。
 

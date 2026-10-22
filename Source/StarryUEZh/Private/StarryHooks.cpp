@@ -82,8 +82,12 @@ namespace
 	using FSetTextFn = void (*)(void*, const FString&, FTextLayout&);
 	// MSVC passes the hidden return buffer for a member function in RDX:
 	//   RCX = this, RDX = return buffer, R8 = first arg, ...
-	using FComputeDesiredSizeFn = void (*)(FSlateTextBlockLayout*, FVector2D*, const FSlateTextBlockLayout::FWidgetDesiredSizeArgs&, float);
-	using FMeasureTextFn = void (*)(const FSlateFontMeasure*, UE::Slate::FDeprecateVector2DResult*, const FText&, const FSlateFontInfo&, float);
+	// A function that returns a class by value must also hand that buffer back
+	// in RAX. Callers such as SSlowTaskWidget::GetMainTextFont() read the result
+	// through that register, so a void hook leaves them with a stale pointer and
+	// they crash on the next dereference.
+	using FComputeDesiredSizeFn = FVector2D* (*)(FSlateTextBlockLayout*, FVector2D*, const FSlateTextBlockLayout::FWidgetDesiredSizeArgs&, float);
+	using FMeasureTextFn = UE::Slate::FDeprecateVector2DResult* (*)(const FSlateFontMeasure*, UE::Slate::FDeprecateVector2DResult*, const FText&, const FSlateFontInfo&, float);
 	using FMakeTextFn = void (*)(FSlateWindowElementList&, uint32, const FPaintGeometry&, const FString&, const FSlateFontInfo&, ESlateDrawEffect, const FLinearColor&);
 	using FUpdateSearchDataFn = void (*)(FEdGraphSchemaAction*, FText, FText, FText, FText);
 	using FNiagaraMatchFn = bool (*)(const FText&, const TSharedPtr<FNiagaraMenuAction_Generic>&);
@@ -355,7 +359,7 @@ namespace
 		}
 	}
 
-	void Hook_ComputeDesiredSize(FSlateTextBlockLayout* This, FVector2D* OutResult,
+	FVector2D* Hook_ComputeDesiredSize(FSlateTextBlockLayout* This, FVector2D* OutResult,
 		const FSlateTextBlockLayout::FWidgetDesiredSizeArgs& Args, float Scale)
 	{
 		if (bRefreshPending.load(std::memory_order_relaxed))
@@ -364,15 +368,16 @@ namespace
 		}
 		if (Real_ComputeDesiredSize)
 		{
-			Real_ComputeDesiredSize(This, OutResult, Args, Scale);
+			return Real_ComputeDesiredSize(This, OutResult, Args, Scale);
 		}
-		else if (OutResult)
+		if (OutResult)
 		{
 			*OutResult = FVector2D::ZeroVector;
 		}
+		return OutResult;
 	}
 
-	void Hook_MeasureText(const FSlateFontMeasure* This, UE::Slate::FDeprecateVector2DResult* OutResult,
+	UE::Slate::FDeprecateVector2DResult* Hook_MeasureText(const FSlateFontMeasure* This, UE::Slate::FDeprecateVector2DResult* OutResult,
 		const FText& Text, const FSlateFontInfo& FontInfo, float FontScale)
 	{
 		if (Real_MeasureText)
@@ -381,15 +386,15 @@ namespace
 			if (FStarryDictionary::Get().TranslateDisplay(Text.ToString(), Translated))
 			{
 				const FText TranslatedText = FText::FromString(MoveTemp(Translated));
-				Real_MeasureText(This, OutResult, TranslatedText, FontInfo, FontScale);
-				return;
+				return Real_MeasureText(This, OutResult, TranslatedText, FontInfo, FontScale);
 			}
-			Real_MeasureText(This, OutResult, Text, FontInfo, FontScale);
+			return Real_MeasureText(This, OutResult, Text, FontInfo, FontScale);
 		}
-		else if (OutResult)
+		if (OutResult)
 		{
 			*OutResult = UE::Slate::FDeprecateVector2DResult(FVector2f::ZeroVector);
 		}
+		return OutResult;
 	}
 
 	void Hook_MakeText(FSlateWindowElementList& ElementList, uint32 InLayer, const FPaintGeometry& PaintGeometry,

@@ -409,7 +409,7 @@ static FAutoConsoleCommand GStarryDiagCommand(
 		UE_LOG(LogStarryUEZh, Log, TEXT("诊断：SetText 调用 %lld 次，命中 %lld 次，词条 %d"),
 			Calls, Hits, FStarryDictionary::Get().Num());
 
-		const TCHAR* Probes[] = { TEXT("Texture Sample"), TEXT("Add"), TEXT("Multiply"), TEXT("Material"), TEXT("Constant3Vector") };
+		const TCHAR* Probes[] = { TEXT("Texture Sample"), TEXT("Add"), TEXT("Multiply"), TEXT("Material"), TEXT("Constant3Vector"), TEXT("TexCoord[0]"), TEXT("TexCoord[1]"), TEXT("TexCoord[2]"), TEXT("TexCoord[3]"), TEXT("TexCoord[4]"), TEXT("TexCoord[5]"), TEXT("TexCoord[6]"), TEXT("TexCoord[7]"), TEXT("TexCoord[8]"), TEXT("TexCoord[9]"), TEXT("Flatten Normal") };
 		for (const TCHAR* Probe : Probes)
 		{
 			FString Translated;

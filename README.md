@@ -38,15 +38,15 @@
 
 | 引擎版本 | 压缩包 |
 |---|---|
-| UE 5.0 | `StarryUEZh_v0.4.0_UE5.0.zip` |
-| UE 5.1 | `StarryUEZh_v0.4.0_UE5.1.zip` |
-| UE 5.2 | `StarryUEZh_v0.4.0_UE5.2.zip` |
-| UE 5.3 | `StarryUEZh_v0.4.0_UE5.3.zip` |
-| UE 5.4 | `StarryUEZh_v0.4.0_UE5.4.zip` |
-| UE 5.5 | `StarryUEZh_v0.4.0_UE5.5.zip` |
-| UE 5.6 | `StarryUEZh_v0.4.0_UE5.6.zip` |
-| UE 5.7 | `StarryUEZh_v0.4.0_UE5.7.zip` |
-| UE 5.8 | `StarryUEZh_v0.4.0_UE5.8.zip` |
+| UE 5.0 | `StarryUEZh_v0.4.1_UE5.0.zip` |
+| UE 5.1 | `StarryUEZh_v0.4.1_UE5.1.zip` |
+| UE 5.2 | `StarryUEZh_v0.4.1_UE5.2.zip` |
+| UE 5.3 | `StarryUEZh_v0.4.1_UE5.3.zip` |
+| UE 5.4 | `StarryUEZh_v0.4.1_UE5.4.zip` |
+| UE 5.5 | `StarryUEZh_v0.4.1_UE5.5.zip` |
+| UE 5.6 | `StarryUEZh_v0.4.1_UE5.6.zip` |
+| UE 5.7 | `StarryUEZh_v0.4.1_UE5.7.zip` |
+| UE 5.8 | `StarryUEZh_v0.4.1_UE5.8.zip` |
 
 每个包里是同一个插件，只有 `Binaries\Win64` 下的 DLL 不同，不能混用。
 
@@ -120,8 +120,7 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 1. 只覆盖 Slate 显示层的文字。Canvas 直绘文字和第三方插件自绘界面可能保持原样。
 2. 切换语言后，已经打开的材质 / 蓝图资产编辑器建议重新打开一次。
 3. 极少数和界面词条同名的用户变量名可能被显示层替换，只影响显示，不影响数据。
-4. 5.3 到 5.8 都有对应编译产物，5.8 做过界面验收，5.3 到 5.7 做过模块加载验证。
-5. 5.2 及以下没有适配。
+4. 5.0 到 5.8 都有对应编译产物，全部做过启动与钩子挂载验证，5.8 另外做过界面验收。
 
 ## 许可证
 
@@ -132,6 +131,6 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 
 ## English
 
-StarryUEZh is a Chinese localization plugin for the Unreal Engine 5.3 to 5.8 editor. It translates Blueprint, Material, Niagara and Animation Blueprint node titles, pins, parameters, details panels, menus and tooltips at the Slate display layer. It supports Chinese/English switching and bilingual node search, adds an in-editor scanning and translation panel with optional DeepSeek support, and never modifies source code, asset names, asset paths or packaged games.
+StarryUEZh is a Chinese localization plugin for the Unreal Engine 5.0 to 5.8 editor. It translates Blueprint, Material, Niagara and Animation Blueprint node titles, pins, parameters, details panels, menus and tooltips at the Slate display layer. It supports Chinese/English switching and bilingual node search, adds an in-editor scanning and translation panel with optional DeepSeek support, and never modifies source code, asset names, asset paths or packaged games.
 
 Download the package matching your engine version from Releases. Code is MIT licensed; dictionary data is CC BY-SA 4.0.

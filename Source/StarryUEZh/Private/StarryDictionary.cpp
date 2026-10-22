@@ -786,7 +786,7 @@ bool FStarryDictionary::Translate(const FString& Source, FString& OutTranslation
 		//   "Texture Sample 'Tex' (DefaultTexture)"
 		//   "Component Mask [R,G,B]"
 		// Translate the stable head and keep the dynamic tail untouched.
-		static const TCHAR* Separators[] = { TEXT(" ("), TEXT(" '"), TEXT(" ["), TEXT(" <"), TEXT("(") };
+		static const TCHAR* Separators[] = { TEXT(" ("), TEXT(" '"), TEXT(" ["), TEXT(" <"), TEXT("("), TEXT("[") };
 		for (const TCHAR* Separator : Separators)
 		{
 			// Try the right-most suffix first: "Render Shadows (Occlusion Mapping) (SB)"

@@ -296,6 +296,9 @@
     "Fall": "下落",
     "Walk": "行走",
     "Inertia": "惯性",
-    "Rotational Inertia": "转动惯量"
+    "Rotational Inertia": "转动惯量",
+    "Flatten Normal": "展平法线",
+    "FlattenNormal": "展平法线",
+    "TexCoord": "纹理坐标"
   }
 }

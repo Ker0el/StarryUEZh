@@ -4,14 +4,14 @@
 
 <h1 align="center">UnrealEngine-Chinese</h1>
 
-<p align="center">虚幻引擎 5.3 到 5.8 编辑器汉化插件 · 星空汉化</p>
+<p align="center">虚幻引擎 5.0 到 5.8 编辑器汉化插件 · 星空汉化</p>
 
 <p align="center">
   蓝图 · 材质 · Niagara · 动画蓝图 · 细节面板 · 菜单
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Unreal%20Engine-5.3%20%7C%205.4%20%7C%205.5%20%7C%205.6%20%7C%205.7%20%7C%205.8-313131?logo=unrealengine&logoColor=white" alt="Unreal Engine">
+  <img src="https://img.shields.io/badge/Unreal%20Engine-5.0%20%7C%205.1%20%7C%205.2%20%7C%205.3%20%7C%205.4%20%7C%205.5%20%7C%205.6%20%7C%205.7%20%7C%205.8-313131?logo=unrealengine&logoColor=white" alt="Unreal Engine">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/Code-MIT-green" alt="MIT">
   <img src="https://img.shields.io/badge/Dictionary-CC%20BY--SA%204.0-orange" alt="CC BY-SA 4.0">
@@ -38,12 +38,15 @@
 
 | 引擎版本 | 压缩包 |
 |---|---|
-| UE 5.3 | `StarryUEZh_v0.3.3_UE5.3.zip` |
-| UE 5.4 | `StarryUEZh_v0.3.3_UE5.4.zip` |
-| UE 5.5 | `StarryUEZh_v0.3.3_UE5.5.zip` |
-| UE 5.6 | `StarryUEZh_v0.3.3_UE5.6.zip` |
-| UE 5.7 | `StarryUEZh_v0.3.3_UE5.7.zip` |
-| UE 5.8 | `StarryUEZh_v0.3.3_UE5.8.zip` |
+| UE 5.0 | `StarryUEZh_v0.4.0_UE5.0.zip` |
+| UE 5.1 | `StarryUEZh_v0.4.0_UE5.1.zip` |
+| UE 5.2 | `StarryUEZh_v0.4.0_UE5.2.zip` |
+| UE 5.3 | `StarryUEZh_v0.4.0_UE5.3.zip` |
+| UE 5.4 | `StarryUEZh_v0.4.0_UE5.4.zip` |
+| UE 5.5 | `StarryUEZh_v0.4.0_UE5.5.zip` |
+| UE 5.6 | `StarryUEZh_v0.4.0_UE5.6.zip` |
+| UE 5.7 | `StarryUEZh_v0.4.0_UE5.7.zip` |
+| UE 5.8 | `StarryUEZh_v0.4.0_UE5.8.zip` |
 
 每个包里是同一个插件，只有 `Binaries\Win64` 下的 DLL 不同，不能混用。
 

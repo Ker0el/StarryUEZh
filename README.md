@@ -34,21 +34,25 @@
 
 ## 下载
 
-到 [Releases](https://github.com/Ker0el/UnrealEngine-Chinese/releases/latest) 按引擎版本下载：
+**v0.4.2 源码包**（与 Fab 上架版本一致，支持 UE 5.0 – 5.8，需要自行编译）：
 
-| 引擎版本 | 压缩包 |
+到 [Releases v0.4.2](https://github.com/Ker0el/UnrealEngine-Chinese/releases/tag/v0.4.2) 按引擎版本下载：
+
+| 引擎版本 | 源码包 |
 |---|---|
-| UE 5.0 | `StarryUEZh_v0.4.1_UE5.0.zip` |
-| UE 5.1 | `StarryUEZh_v0.4.1_UE5.1.zip` |
-| UE 5.2 | `StarryUEZh_v0.4.1_UE5.2.zip` |
-| UE 5.3 | `StarryUEZh_v0.4.1_UE5.3.zip` |
-| UE 5.4 | `StarryUEZh_v0.4.1_UE5.4.zip` |
-| UE 5.5 | `StarryUEZh_v0.4.1_UE5.5.zip` |
-| UE 5.6 | `StarryUEZh_v0.4.1_UE5.6.zip` |
-| UE 5.7 | `StarryUEZh_v0.4.1_UE5.7.zip` |
-| UE 5.8 | `StarryUEZh_v0.4.1_UE5.8.zip` |
+| UE 5.0 | `StarryUEZh_v0.4.2_UE5.0_Source.zip` |
+| UE 5.1 | `StarryUEZh_v0.4.2_UE5.1_Source.zip` |
+| UE 5.2 | `StarryUEZh_v0.4.2_UE5.2_Source.zip` |
+| UE 5.3 | `StarryUEZh_v0.4.2_UE5.3_Source.zip` |
+| UE 5.4 | `StarryUEZh_v0.4.2_UE5.4_Source.zip` |
+| UE 5.5 | `StarryUEZh_v0.4.2_UE5.5_Source.zip` |
+| UE 5.6 | `StarryUEZh_v0.4.2_UE5.6_Source.zip` |
+| UE 5.7 | `StarryUEZh_v0.4.2_UE5.7_Source.zip` |
+| UE 5.8 | `StarryUEZh_v0.4.2_UE5.8_Source.zip` |
 
-每个包里是同一个插件，只有 `Binaries\Win64` 下的 DLL 不同，不能混用。
+每个源码包是同一个插件，只有 `.uplugin` 里的 `EngineVersion` 不同，不能混用。源码包不含 DLL，第一次打开项目时由引擎编译。
+
+需要开箱即用的预编译包，见 [v0.4.1 Release](https://github.com/Ker0el/UnrealEngine-Chinese/releases/tag/v0.4.1)（含 `Binaries\Win64` 下的 DLL）。
 
 ## 安装
 

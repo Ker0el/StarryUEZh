@@ -46,7 +46,7 @@ public class StarryUEZh : ModuleRules
 		}
 		else
 		{
-			string DetoursDir = Path.Combine(ModuleDirectory, "..", "..", "ThirdParty", "Detours");
+			string DetoursDir = Path.Combine(ModuleDirectory, "..", "ThirdParty", "Detours");
 			PublicSystemIncludePaths.Add(Path.Combine(DetoursDir, "include"));
 			PublicAdditionalLibraries.Add(Path.Combine(DetoursDir, "lib", "detours.lib"));
 		}

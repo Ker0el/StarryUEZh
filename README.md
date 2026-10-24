@@ -112,7 +112,7 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 产物在 `Plugins\StarryUEZh\Binaries\Win64\UnrealEditor-StarryUEZh.dll`。
 
 - UE 5.8 使用引擎自带的 Detours 模块。
-- UE 5.3 到 5.7 使用 `ThirdParty\Detours` 里的 Microsoft Detours v4.0.1。
+- UE 5.3 到 5.7 使用 `Source\ThirdParty\Detours` 里的 Microsoft Detours v4.0.1。
 - 插件依赖 `AnimGraph`、`NiagaraEditor`、`MaterialEditor`、`BlueprintGraph` 等编辑器模块。
 
 ## 已知限制
@@ -125,7 +125,7 @@ UnrealBuildTool.exe StarryUEZhHostEditor Win64 Development ^
 
 - 代码：MIT，见 `LICENSE`
 - 词库：CC BY-SA 4.0，见 `LICENSE-DICTIONARY`
-- `ThirdParty/Detours`：Microsoft Detours v4.0.1，MIT，见 `ThirdParty/Detours/LICENSE.md`
+- `Source/ThirdParty/Detours`：Microsoft Detours v4.0.1，MIT，见 `Source/ThirdParty/Detours/LICENSE.md`
 - 部分词条来自 Unreal Engine 自带的 zh-Hans 本地化资源，版权归 Epic Games 所有，详见 `NOTICE.md`
 
 ## English

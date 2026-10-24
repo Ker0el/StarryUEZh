@@ -17,8 +17,8 @@ Copyright (c) 2026 星空汉化 (Ker0el)
 
 ## 第三方
 
-`ThirdParty/Detours` 是 Microsoft Detours v4.0.1，使用 MIT 许可证，
-见 `ThirdParty/Detours/LICENSE.md`。
+`Source/ThirdParty/Detours` 是 Microsoft Detours v4.0.1，使用 MIT 许可证，
+见 `Source/ThirdParty/Detours/LICENSE.md`。
 
 ## 不在授权范围内的内容
 

@@ -34,25 +34,27 @@
 
 ## 下载
 
-**v0.4.2 源码包**（与 Fab 上架版本一致，支持 UE 5.0 – 5.8，需要自行编译）：
+**v0.4.3 安装包**（含预编译 DLL，开箱即用，支持 UE 5.0 – 5.8）：
 
-到 [Releases v0.4.2](https://github.com/Ker0el/UnrealEngine-Chinese/releases/tag/v0.4.2) 按引擎版本下载：
+到 [Releases v0.4.3](https://github.com/Ker0el/UnrealEngine-Chinese/releases/tag/v0.4.3) 按引擎版本下载：
 
-| 引擎版本 | 源码包 |
+| 引擎版本 | 安装包 |
 |---|---|
-| UE 5.0 | `StarryUEZh_v0.4.2_UE5.0_Source.zip` |
-| UE 5.1 | `StarryUEZh_v0.4.2_UE5.1_Source.zip` |
-| UE 5.2 | `StarryUEZh_v0.4.2_UE5.2_Source.zip` |
-| UE 5.3 | `StarryUEZh_v0.4.2_UE5.3_Source.zip` |
-| UE 5.4 | `StarryUEZh_v0.4.2_UE5.4_Source.zip` |
-| UE 5.5 | `StarryUEZh_v0.4.2_UE5.5_Source.zip` |
-| UE 5.6 | `StarryUEZh_v0.4.2_UE5.6_Source.zip` |
-| UE 5.7 | `StarryUEZh_v0.4.2_UE5.7_Source.zip` |
-| UE 5.8 | `StarryUEZh_v0.4.2_UE5.8_Source.zip` |
+| UE 5.0 | `StarryUEZh_v0.4.3_UE5.0.zip` |
+| UE 5.1 | `StarryUEZh_v0.4.3_UE5.1.zip` |
+| UE 5.2 | `StarryUEZh_v0.4.3_UE5.2.zip` |
+| UE 5.3 | `StarryUEZh_v0.4.3_UE5.3.zip` |
+| UE 5.4 | `StarryUEZh_v0.4.3_UE5.4.zip` |
+| UE 5.5 | `StarryUEZh_v0.4.3_UE5.5.zip` |
+| UE 5.6 | `StarryUEZh_v0.4.3_UE5.6.zip` |
+| UE 5.7 | `StarryUEZh_v0.4.3_UE5.7.zip` |
+| UE 5.8 | `StarryUEZh_v0.4.3_UE5.8.zip` |
 
-每个源码包是同一个插件，只有 `.uplugin` 里的 `EngineVersion` 不同，不能混用。源码包不含 DLL，第一次打开项目时由引擎编译。
+每个安装包是同一个插件，只有 `.uplugin` 里的 `EngineVersion` 和 `Binaries\Win64` 里的 DLL 不同，不能混用。安装包内含预编译模块和完整源码，不需要自己编译。
 
-需要开箱即用的预编译包，见 [v0.4.1 Release](https://github.com/Ker0el/UnrealEngine-Chinese/releases/tag/v0.4.1)（含 `Binaries\Win64` 下的 DLL）。
+> 在 Fab 购买的用户不用下载这里的包：在 Fab 库里选中引擎版本安装即可，Fab 会在服务器端按版本编译好。
+
+> 旧版本 `v0.4.2` 是纯源码包（不含 DLL），只适合愿意自行编译的开发者。
 
 ## 安装
 
@@ -62,10 +64,12 @@
 <你的项目>\Plugins\StarryUEZh
 ```
 
+   也可以放到引擎插件目录 `Engine\Plugins\Marketplace\StarryUEZh`，对所有项目生效。安装包自带对应版本的 DLL，两种位置都能直接用。
+
 2. 打开项目，在「编辑 > 插件」里启用 **星空汉化**，重启编辑器。
 3. 插件依赖引擎自带的 **Niagara** 插件，确保它是启用状态。
 
-如果提示「模块缺失或引擎版本不同」，检查 `Binaries\Win64` 下是否有 `UnrealEditor-StarryUEZh.dll` 和 `UnrealEditor.modules`，并确认下载的包和引擎版本一致。
+如果提示「模块缺失或引擎版本不同」，说明下载的包和引擎版本不一致，或者用的是不含 DLL 的 `v0.4.2` 源码包。请换成 `v0.4.3` 里与引擎大版本对应的安装包；源码包必须放到项目 `Plugins` 目录并用 Visual Studio 自行编译。
 
 ## 使用
 
